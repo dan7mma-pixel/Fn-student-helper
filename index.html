@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Planner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Подключение CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Student Planner</h1>
+    <p>Удобное планирование для студентов</p>
+</header>
+
+<main>
+
+    <!-- Инструкция -->
+    <section id="instructions" class="visible">
+        <h2>Как пользоваться сайтом</h2>
+        <p>Добавляйте задачи, отслеживайте дедлайны и пользуйтесь полезными ресурсами.</p>
+    </section>
+
+    <!-- Полезные ресурсы -->
+    <section id="resources" class="visible">
+        <h2>Полезные ресурсы</h2>
+
+        <div id="resourceList" class="show">
+            <a href="https://scholar.google.com" target="_blank" class="resource-card show">
+                Google Scholar
+            </a>
+
+            <a href="https://www.overleaf.com" target="_blank" class="resource-card show">
+                Overleaf
+            </a>
+
+            <a href="https://github.com" target="_blank" class="resource-card show">
+                GitHub
+            </a>
+        </div>
+    </section>
+
+    <!-- To-Do -->
+    <section id="todo" class="visible">
+        <h2>Мои задачи</h2>
+
+        <div class="todo-input">
+            <input type="text" id="taskInput" placeholder="Введите новую задачу">
+            <button onclick="addTask()">Добавить</button>
+        </div>
+
+        <ul id="taskList"></ul>
+
+        <div id="taskCounter">Задач выполнено: 0 / 0</div>
+
+        <div id="progressBarContainer">
+            <div id="progressBar"></div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    © 2026 Student Planner | Сделано студентами
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
