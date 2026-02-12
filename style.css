@@ -436,3 +436,26 @@ li.dragging {
 #taskList li:active {
   cursor: grabbing;
 }
+.move-btn {
+  margin-left: 6px;
+  padding: 4px 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: rgba(0,0,0,0.1);
+  transition: 0.2s;
+}
+
+.move-btn:hover {
+  background: rgba(0,0,0,0.2);
+}
+
+.dark-theme .move-btn {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.dark-theme .move-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
