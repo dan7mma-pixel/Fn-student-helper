@@ -53,7 +53,11 @@
             <input type="text" id="taskInput" placeholder="Введите новую задачу">
             <button id="addTaskBtn">Добавить</button>
         </div>
-
+<div class="filter-buttons">
+  <button data-filter="all" class="filter-btn active">Все</button>
+  <button data-filter="active" class="filter-btn">Активные</button>
+  <button data-filter="completed" class="filter-btn">Выполненные</button>
+</div>
         <ul id="taskList"></ul>
 
         <div id="taskCounter">Задач выполнено: 0 / 0</div>
