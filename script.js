@@ -61,8 +61,46 @@ document.addEventListener("DOMContentLoaded", function() {
     if (completed) li.classList.add("completed");
 
     const span = document.createElement("span");
-    span.textContent = text;
-    span.classList.add("task-text");
+span.textContent = text;
+span.classList.add("task-text");
+
+/* ===== РЕДАКТИРОВАНИЕ ===== */
+span.addEventListener("dblclick", function (e) {
+  e.stopPropagation();
+
+  const inputEdit = document.createElement("input");
+  inputEdit.type = "text";
+  inputEdit.value = span.textContent;
+  inputEdit.classList.add("edit-input");
+
+  li.replaceChild(inputEdit, span);
+  inputEdit.focus();
+  inputEdit.select();
+
+  function saveEdit() {
+    const newValue = inputEdit.value.trim();
+    if (newValue !== "") {
+      span.textContent = newValue;
+    }
+    li.replaceChild(span, inputEdit);
+    saveTasks();
+  }
+
+  function cancelEdit() {
+    li.replaceChild(span, inputEdit);
+  }
+
+  inputEdit.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      saveEdit();
+    }
+    if (e.key === "Escape") {
+      cancelEdit();
+    }
+  });
+
+  inputEdit.addEventListener("blur", saveEdit);
+});
     li.appendChild(span);
 
     li.classList.add("task-appear");
