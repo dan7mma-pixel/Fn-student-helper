@@ -371,3 +371,42 @@ body.dark-theme footer {
     width: 100%;
   }
 }
+/* ===== ФИЛЬТР ===== */
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.filter-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+  background: rgba(255,255,255,0.3);
+  color: white;
+}
+
+.filter-btn:hover {
+  transform: scale(1.05);
+}
+
+.filter-btn.active {
+  background: white;
+  color: #333;
+}
+
+/* DARK THEME */
+body.dark-theme .filter-btn {
+  background: rgba(255,255,255,0.1);
+  color: #e4e4e4;
+}
+
+body.dark-theme .filter-btn.active {
+  background: #00c6ff;
+  color: white;
+}
