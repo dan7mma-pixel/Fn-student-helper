@@ -244,3 +244,42 @@ footer {
 #taskList li:hover {
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
+
+/* ===== Праздничная анимация ===== */
+.celebration {
+  position: fixed;
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: linear-gradient(135deg, #4a90e2, #50e3c2);
+  color: white;
+  padding: 18px 35px;
+  border-radius: 14px;
+  font-weight: bold;
+  font-size: 1.1em;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  animation: celebrationPop 0.4s ease forwards;
+  z-index: 1000;
+}
+
+@keyframes celebrationPop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.celebration-hide {
+  animation: celebrationFade 0.6s ease forwards;
+}
+
+@keyframes celebrationFade {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-15px);
+  }
+}
