@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function() {
   function createTask(text, completed = false) {
 
     const li = document.createElement("li");
-    li.draggable = true; // ВКЛЮЧАЕМ DRAG
+    li.draggable = true;
     if (completed) li.classList.add("completed");
 
-    /* ===== DRAG EVENTS ===== */
+    /* ===== DRAG ===== */
 
     li.addEventListener("dragstart", () => {
       li.classList.add("dragging");
@@ -126,6 +126,34 @@ document.addEventListener("DOMContentLoaded", function() {
       saveTasks();
     });
 
+    /* ===== КНОПКИ СОРТИРОВКИ ===== */
+
+    const upBtn = document.createElement("button");
+    upBtn.textContent = "↑";
+    upBtn.classList.add("move-btn");
+
+    upBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const prev = li.previousElementSibling;
+      if (prev) {
+        taskList.insertBefore(li, prev);
+        saveTasks();
+      }
+    });
+
+    const downBtn = document.createElement("button");
+    downBtn.textContent = "↓";
+    downBtn.classList.add("move-btn");
+
+    downBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const next = li.nextElementSibling;
+      if (next) {
+        taskList.insertBefore(next, li);
+        saveTasks();
+      }
+    });
+
     /* ===== УДАЛЕНИЕ ===== */
 
     const deleteBtn = document.createElement("button");
@@ -142,11 +170,16 @@ document.addEventListener("DOMContentLoaded", function() {
       }, 300);
     });
 
+    /* ===== ДОБАВЛЯЕМ В ЭЛЕМЕНТ ===== */
+
+    li.appendChild(upBtn);
+    li.appendChild(downBtn);
     li.appendChild(deleteBtn);
+
     taskList.appendChild(li);
   }
 
-  /* ===== DRAG LOGIC НА СПИСКЕ ===== */
+  /* ===== DRAG LOGIC ===== */
 
   taskList.addEventListener("dragover", function (e) {
     e.preventDefault();
@@ -178,7 +211,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
-  /* ===== Добавление задачи ===== */
+  /* ===== Добавление ===== */
 
   function addTask() {
     const taskText = taskInput.value.trim();
@@ -251,10 +284,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   filterButtons.forEach(button => {
     button.addEventListener("click", function() {
-
       filterButtons.forEach(btn => btn.classList.remove("active"));
       this.classList.add("active");
-
       currentFilter = this.dataset.filter;
       applyFilter();
     });
