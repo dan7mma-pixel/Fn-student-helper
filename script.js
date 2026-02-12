@@ -3,6 +3,7 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const taskList = document.getElementById("taskList");
 const taskCounter = document.getElementById("taskCounter");
 const progressBar = document.getElementById("progressBar");
+let celebrationShown = false;
 
 /* ===== Сохранение ===== */
 function saveTasks() {
@@ -87,6 +88,17 @@ function updateProgress() {
 
   const percent = total === 0 ? 0 : (done / total) * 100;
   progressBar.style.width = percent + "%";
+  
+// 🎉 Проверка на 100%
+  if (total > 0 && done === total && !celebrationShown) {
+    launchCelebration();
+    celebrationShown = true;
+  }
+
+  // Если снова появились незавершённые задачи — разрешаем повтор
+  if (done !== total) {
+    celebrationShown = false;
+  }
 }
 
 /* ===== События ===== */
@@ -100,3 +112,19 @@ taskInput.addEventListener("keyup", function(e) {
 
 /* ===== Инициализация ===== */
 loadTasks();
+
+function launchCelebration() {
+  const celebration = document.createElement("div");
+  celebration.classList.add("celebration");
+  celebration.textContent = "🎉 Все задачи выполнены! Отличная работа!";
+
+  document.body.appendChild(celebration);
+
+  setTimeout(() => {
+    celebration.classList.add("celebration-hide");
+  }, 1800);
+
+  setTimeout(() => {
+    celebration.remove();
+  }, 2500);
+}
