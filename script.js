@@ -6,7 +6,8 @@ document.addEventListener("DOMContentLoaded", function() {
   const taskCounter = document.getElementById("taskCounter");
   const progressBar = document.getElementById("progressBar");
   const themeToggle = document.getElementById("themeToggle");
-
+let currentFilter = "all";
+const filterButtons = document.querySelectorAll(".filter-btn");
   let celebrationShown = false;
 
   /* ===== ТЕМА ===== */
@@ -92,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     createTask(taskText);
     taskInput.value = "";
-    updateProgress();
+    updateProgress()applyFilter();;
     saveTasks();
   }
 
@@ -167,3 +168,30 @@ function updateProgress() {
     celebrationShown = false;
   }
 }
+function applyFilter() {
+  const tasks = taskList.querySelectorAll("li");
+
+  tasks.forEach(task => {
+    const isCompleted = task.classList.contains("completed");
+
+    if (currentFilter === "all") {
+      task.style.display = "flex";
+    } 
+    else if (currentFilter === "active") {
+      task.style.display = isCompleted ? "none" : "flex";
+    } 
+    else if (currentFilter === "completed") {
+      task.style.display = isCompleted ? "flex" : "none";
+    }
+  });
+}
+filterButtons.forEach(button => {
+  button.addEventListener("click", function() {
+
+    filterButtons.forEach(btn => btn.classList.remove("active"));
+    this.classList.add("active");
+
+    currentFilter = this.dataset.filter;
+    applyFilter();
+  });
+});
