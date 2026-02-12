@@ -1,4 +1,5 @@
 console.log("JS загружен");
+
 document.addEventListener("DOMContentLoaded", function() {
 
   const taskInput = document.getElementById("taskInput");
@@ -57,59 +58,75 @@ document.addEventListener("DOMContentLoaded", function() {
   /* ===== Создание задачи ===== */
 
   function createTask(text, completed = false) {
+
     const li = document.createElement("li");
+    li.draggable = true; // ВКЛЮЧАЕМ DRAG
     if (completed) li.classList.add("completed");
 
+    /* ===== DRAG EVENTS ===== */
+
+    li.addEventListener("dragstart", () => {
+      li.classList.add("dragging");
+    });
+
+    li.addEventListener("dragend", () => {
+      li.classList.remove("dragging");
+      saveTasks();
+    });
+
+    /* ===== ТЕКСТ ===== */
+
     const span = document.createElement("span");
-span.textContent = text;
-span.classList.add("task-text");
+    span.textContent = text;
+    span.classList.add("task-text");
 
-/* ===== РЕДАКТИРОВАНИЕ ===== */
-span.addEventListener("dblclick", function (e) {
-  e.stopPropagation();
+    /* ===== РЕДАКТИРОВАНИЕ ===== */
 
-  const inputEdit = document.createElement("input");
-  inputEdit.type = "text";
-  inputEdit.value = span.textContent;
-  inputEdit.classList.add("edit-input");
+    span.addEventListener("dblclick", function (e) {
+      e.stopPropagation();
 
-  li.replaceChild(inputEdit, span);
-  inputEdit.focus();
-  inputEdit.select();
+      const inputEdit = document.createElement("input");
+      inputEdit.type = "text";
+      inputEdit.value = span.textContent;
+      inputEdit.classList.add("edit-input");
 
-  function saveEdit() {
-    const newValue = inputEdit.value.trim();
-    if (newValue !== "") {
-      span.textContent = newValue;
-    }
-    li.replaceChild(span, inputEdit);
-    saveTasks();
-  }
+      li.replaceChild(inputEdit, span);
+      inputEdit.focus();
+      inputEdit.select();
 
-  function cancelEdit() {
-    li.replaceChild(span, inputEdit);
-  }
+      function saveEdit() {
+        const newValue = inputEdit.value.trim();
+        if (newValue !== "") {
+          span.textContent = newValue;
+        }
+        li.replaceChild(span, inputEdit);
+        saveTasks();
+      }
 
-  inputEdit.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") {
-      saveEdit();
-    }
-    if (e.key === "Escape") {
-      cancelEdit();
-    }
-  });
+      function cancelEdit() {
+        li.replaceChild(span, inputEdit);
+      }
 
-  inputEdit.addEventListener("blur", saveEdit);
-});
+      inputEdit.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") saveEdit();
+        if (e.key === "Escape") cancelEdit();
+      });
+
+      inputEdit.addEventListener("blur", saveEdit);
+    });
+
     li.appendChild(span);
-
     li.classList.add("task-appear");
+
+    /* ===== КЛИК — ВЫПОЛНЕНО ===== */
 
     li.addEventListener("click", function() {
       li.classList.toggle("completed");
       updateProgress();
       saveTasks();
     });
+
+    /* ===== УДАЛЕНИЕ ===== */
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "✕";
@@ -127,6 +144,38 @@ span.addEventListener("dblclick", function (e) {
 
     li.appendChild(deleteBtn);
     taskList.appendChild(li);
+  }
+
+  /* ===== DRAG LOGIC НА СПИСКЕ ===== */
+
+  taskList.addEventListener("dragover", function (e) {
+    e.preventDefault();
+
+    const dragging = document.querySelector(".dragging");
+    const afterElement = getDragAfterElement(taskList, e.clientY);
+
+    if (!dragging) return;
+
+    if (afterElement == null) {
+      taskList.appendChild(dragging);
+    } else {
+      taskList.insertBefore(dragging, afterElement);
+    }
+  });
+
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll("li:not(.dragging)")];
+
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
   /* ===== Добавление задачи ===== */
