@@ -283,3 +283,94 @@ footer {
     transform: translateX(-50%) translateY(-15px);
   }
 }
+/* ===== Кнопка темы ===== */
+.theme-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Анимация смены темы ===== */
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* ===== DARK THEME PRO ===== */
+.dark-theme {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  background-attachment: fixed;
+  color: #f1f1f1;
+}
+
+/* Header */
+.dark-theme header {
+  background: linear-gradient(135deg, #141e30, #243b55);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+}
+
+/* Sections */
+.dark-theme section {
+  background: linear-gradient(145deg, #1b1b1b, #232323);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Карточки */
+.dark-theme .resource-card {
+  background: linear-gradient(145deg, #1f1f1f, #292929);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  transition: 0.3s ease;
+}
+
+.dark-theme .resource-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+
+/* Задачи */
+.dark-theme #taskList li {
+  background: linear-gradient(145deg, #1c1c1c, #262626);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Поле ввода */
+.dark-theme .todo-input input {
+  background: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #ffffff;
+}
+
+/* Кнопка добавления */
+.dark-theme .todo-input button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  border: none;
+}
+
+/* Прогресс-бар контейнер */
+.dark-theme #progressBarContainer {
+  background: rgba(255,255,255,0.08);
+}
+
+/* Светящийся прогресс */
+.dark-theme #progressBar {
+  background: linear-gradient(90deg, #00f5ff, #00ff9d);
+  box-shadow: 0 0 15px rgba(0,255,180,0.7);
+  transition: width 0.4s ease;
+}
+
+/* Footer */
+.dark-theme footer {
+  background: linear-gradient(135deg, #141e30, #1c1c1c);
+}
