@@ -6,11 +6,14 @@ document.addEventListener("DOMContentLoaded", function() {
   const taskCounter = document.getElementById("taskCounter");
   const progressBar = document.getElementById("progressBar");
   const themeToggle = document.getElementById("themeToggle");
-let currentFilter = "all";
-const filterButtons = document.querySelectorAll(".filter-btn");
+
+  const filterButtons = document.querySelectorAll(".filter-btn");
+
+  let currentFilter = "all";
   let celebrationShown = false;
 
   /* ===== ТЕМА ===== */
+
   if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark-theme");
     if (themeToggle) themeToggle.textContent = "☀️";
@@ -31,6 +34,7 @@ const filterButtons = document.querySelectorAll(".filter-btn");
   }
 
   /* ===== Сохранение ===== */
+
   function saveTasks() {
     const tasks = [];
     taskList.querySelectorAll("li").forEach(li => {
@@ -43,6 +47,7 @@ const filterButtons = document.querySelectorAll(".filter-btn");
   }
 
   /* ===== Загрузка ===== */
+
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     tasks.forEach(task => createTask(task.text, task.completed));
@@ -50,16 +55,16 @@ const filterButtons = document.querySelectorAll(".filter-btn");
   }
 
   /* ===== Создание задачи ===== */
+
   function createTask(text, completed = false) {
     const li = document.createElement("li");
-
     if (completed) li.classList.add("completed");
 
     const span = document.createElement("span");
     span.textContent = text;
     span.classList.add("task-text");
-
     li.appendChild(span);
+
     li.classList.add("task-appear");
 
     li.addEventListener("click", function() {
@@ -87,20 +92,89 @@ const filterButtons = document.querySelectorAll(".filter-btn");
   }
 
   /* ===== Добавление задачи ===== */
+
   function addTask() {
     const taskText = taskInput.value.trim();
     if (!taskText) return;
 
     createTask(taskText);
     taskInput.value = "";
-    updateProgress()applyFilter();;
+    updateProgress();
     saveTasks();
   }
 
   /* ===== Прогресс ===== */
- 
+
+  function updateProgress() {
+    const tasks = taskList.querySelectorAll("li");
+    const completed = taskList.querySelectorAll("li.completed");
+
+    const total = tasks.length;
+    const done = completed.length;
+
+    taskCounter.textContent = `Задач выполнено: ${done} / ${total}`;
+
+    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+    progressBar.style.width = percent + "%";
+
+    if (percent === 100 && total > 0) {
+      progressBar.style.background = "linear-gradient(90deg, #00ff9d, #00c853)";
+    } 
+    else if (percent >= 70) {
+      progressBar.style.background = "linear-gradient(90deg, #00f5ff, #0072ff)";
+    } 
+    else if (percent >= 30) {
+      progressBar.style.background = "linear-gradient(90deg, #ffd200, #ff9800)";
+    } 
+    else {
+      progressBar.style.background = "linear-gradient(90deg, #ff4d4d, #ff0000)";
+    }
+
+    if (total > 0 && done === total && !celebrationShown) {
+      launchCelebration();
+      celebrationShown = true;
+    }
+
+    if (done !== total) {
+      celebrationShown = false;
+    }
+
+    applyFilter();
+  }
+
+  /* ===== Фильтр ===== */
+
+  function applyFilter() {
+    const tasks = taskList.querySelectorAll("li");
+
+    tasks.forEach(task => {
+      const isCompleted = task.classList.contains("completed");
+
+      if (currentFilter === "all") {
+        task.style.display = "flex";
+      } 
+      else if (currentFilter === "active") {
+        task.style.display = isCompleted ? "none" : "flex";
+      } 
+      else if (currentFilter === "completed") {
+        task.style.display = isCompleted ? "flex" : "none";
+      }
+    });
+  }
+
+  filterButtons.forEach(button => {
+    button.addEventListener("click", function() {
+
+      filterButtons.forEach(btn => btn.classList.remove("active"));
+      this.classList.add("active");
+
+      currentFilter = this.dataset.filter;
+      applyFilter();
+    });
+  });
 
   /* ===== События ===== */
+
   addTaskBtn.addEventListener("click", addTask);
 
   taskInput.addEventListener("keydown", function(e) {
@@ -110,7 +184,8 @@ const filterButtons = document.querySelectorAll(".filter-btn");
     }
   });
 
-  /* ===== Праздничная анимация ===== */
+  /* ===== Праздник ===== */
+
   function launchCelebration() {
     const celebration = document.createElement("div");
     celebration.classList.add("celebration");
@@ -128,70 +203,5 @@ const filterButtons = document.querySelectorAll(".filter-btn");
   }
 
   loadTasks();
-});
 
-function updateProgress() {
-  const tasks = taskList.querySelectorAll("li");
-  const completed = taskList.querySelectorAll("li.completed");
-
-  const total = tasks.length;
-  const done = completed.length;
-
-  taskCounter.textContent = `Задач выполнено: ${done} / ${total}`;
-
-  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-  progressBar.style.width = percent + "%";
-
-  /* ===== ДИНАМИЧЕСКИЙ ЦВЕТ ===== */
-
-  if (percent === 100 && total > 0) {
-    progressBar.style.background = "linear-gradient(90deg, #00ff9d, #00c853)";
-  } 
-  else if (percent >= 70) {
-    progressBar.style.background = "linear-gradient(90deg, #00f5ff, #0072ff)";
-  } 
-  else if (percent >= 30) {
-    progressBar.style.background = "linear-gradient(90deg, #ffd200, #ff9800)";
-  } 
-  else {
-    progressBar.style.background = "linear-gradient(90deg, #ff4d4d, #ff0000)";
-  }
-
-  /* ===== Праздник 100% ===== */
-
-  if (total > 0 && done === total && !celebrationShown) {
-    launchCelebration();
-    celebrationShown = true;
-  }
-
-  if (done !== total) {
-    celebrationShown = false;
-  }
-}
-function applyFilter() {
-  const tasks = taskList.querySelectorAll("li");
-
-  tasks.forEach(task => {
-    const isCompleted = task.classList.contains("completed");
-
-    if (currentFilter === "all") {
-      task.style.display = "flex";
-    } 
-    else if (currentFilter === "active") {
-      task.style.display = isCompleted ? "none" : "flex";
-    } 
-    else if (currentFilter === "completed") {
-      task.style.display = isCompleted ? "flex" : "none";
-    }
-  });
-}
-filterButtons.forEach(button => {
-  button.addEventListener("click", function() {
-
-    filterButtons.forEach(btn => btn.classList.remove("active"));
-    this.classList.add("active");
-
-    currentFilter = this.dataset.filter;
-    applyFilter();
-  });
 });
