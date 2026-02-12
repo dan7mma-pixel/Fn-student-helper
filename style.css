@@ -1,4 +1,7 @@
-/* ===== Общие стили ===== */
+/* ============================= */
+/* ===== ОСНОВНЫЕ СТИЛИ ===== */
+/* ============================= */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -6,10 +9,15 @@ body {
   background-color: #f0f4f8;
   color: #333;
   line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* ===== Header ===== */
+/* ============================= */
+/* ===== HEADER ===== */
+/* ============================= */
+
 header {
+  position: relative;
   background: linear-gradient(135deg, #4a90e2, #50e3c2);
   color: white;
   text-align: center;
@@ -26,22 +34,46 @@ header p {
   margin-top: 10px;
 }
 
-/* ===== Main ===== */
+/* Кнопка темы */
+.theme-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ============================= */
+/* ===== MAIN ===== */
+/* ============================= */
+
 main {
   max-width: 900px;
   margin: 30px auto;
   padding: 0 20px;
 }
 
-/* ===== Секции ===== */
+/* ============================= */
+/* ===== СЕКЦИИ ===== */
+/* ============================= */
+
 section {
   padding: 25px 20px;
   margin-bottom: 25px;
   border-radius: 12px;
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
-/* ===== Градиенты секций ===== */
 #instructions {
   background: linear-gradient(135deg, #50e3c2, #4a90e2);
   color: white;
@@ -57,12 +89,10 @@ section {
   color: white;
 }
 
-/* ===== Заголовки ===== */
-section h2 {
-  margin-top: 0;
-}
+/* ============================= */
+/* ===== РЕСУРСЫ ===== */
+/* ============================= */
 
-/* ===== Карточки ресурсов ===== */
 #resourceList {
   display: flex;
   flex-wrap: wrap;
@@ -72,14 +102,14 @@ section h2 {
 
 .resource-card {
   flex: 1 1 250px;
-  background-color: white;
+  background: white;
   color: #333;
   text-decoration: none;
   padding: 20px;
   border-radius: 12px;
   text-align: center;
   font-weight: bold;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.4s ease, color 0.4s ease;
 }
 
 .resource-card:hover {
@@ -87,7 +117,10 @@ section h2 {
   box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
-/* ===== To-Do ===== */
+/* ============================= */
+/* ===== TODO ===== */
+/* ============================= */
+
 .todo-input {
   display: flex;
   gap: 10px;
@@ -118,7 +151,8 @@ section h2 {
   transform: scale(1.05);
 }
 
-/* ===== Список задач ===== */
+/* Список задач */
+
 #taskList {
   list-style: none;
   padding: 0;
@@ -134,11 +168,13 @@ section h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease, color 0.4s ease;
 }
 
 #taskList li:hover {
   transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
 .completed {
@@ -146,7 +182,8 @@ section h2 {
   opacity: 0.6;
 }
 
-/* ===== Кнопка удаления ===== */
+/* Кнопка удаления */
+
 .delete-btn {
   background: crimson;
   border: none;
@@ -156,7 +193,10 @@ section h2 {
   cursor: pointer;
 }
 
-/* ===== Прогресс ===== */
+/* ============================= */
+/* ===== ПРОГРЕСС ===== */
+/* ============================= */
+
 #taskCounter {
   margin-top: 15px;
   font-weight: bold;
@@ -179,7 +219,10 @@ section h2 {
   transition: width 0.5s ease-in-out;
 }
 
-/* ===== Footer ===== */
+/* ============================= */
+/* ===== FOOTER ===== */
+/* ============================= */
+
 footer {
   background-color: #333;
   color: white;
@@ -189,63 +232,29 @@ footer {
   font-size: 0.9em;
 }
 
-/* ===== Адаптив ===== */
-@media (max-width: 600px) {
-  #resourceList {
-    flex-direction: column;
-  }
+/* ============================= */
+/* ===== АНИМАЦИИ ===== */
+/* ============================= */
 
-  .resource-card {
-    flex: 1 1 100%;
-  }
-
-  .todo-input {
-    flex-direction: column;
-  }
-
-  .todo-input button {
-    width: 100%;
-  }
-}
-/* ===== Анимация появления задачи ===== */
 .task-appear {
   animation: fadeInTask 0.4s ease forwards;
 }
 
 @keyframes fadeInTask {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Анимация удаления ===== */
 .task-remove {
   animation: fadeOutTask 0.3s ease forwards;
 }
 
 @keyframes fadeOutTask {
-  to {
-    opacity: 0;
-    transform: translateX(30px);
-  }
+  to { opacity: 0; transform: translateX(30px); }
 }
 
-/* ===== Hover-эффект задачи ===== */
-#taskList li {
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+/* Праздничное сообщение */
 
-#taskList li:hover {
-  box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-}
-
-/* ===== Праздничная анимация ===== */
 .celebration {
   position: fixed;
   top: 25px;
@@ -263,14 +272,8 @@ footer {
 }
 
 @keyframes celebrationPop {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
+  from { opacity: 0; transform: translateX(-50%) scale(0.8); }
+  to { opacity: 1; transform: translateX(-50%) scale(1); }
 }
 
 .celebration-hide {
@@ -278,144 +281,95 @@ footer {
 }
 
 @keyframes celebrationFade {
-  to {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-15px);
-  }
-}
-/* ===== Кнопка темы ===== */
-.theme-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.2);
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 1.2em;
-  cursor: pointer;
-  transition: 0.3s;
+  to { opacity: 0; transform: translateX(-50%) translateY(-15px); }
 }
 
-.theme-btn:hover {
-  transform: scale(1.1);
-}
+/* ============================= */
+/* ===== DARK THEME ===== */
+/* ============================= */
 
-/* ===== Анимация смены темы ===== */
-body {
-  transition: background-color 0.4s ease, color 0.4s ease;
-}
-
-/* ===== DARK THEME PRO ===== */
-.dark-theme {
+body.dark-theme {
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   background-attachment: fixed;
-  color: #f1f1f1;
-}
-
-/* Header */
-.dark-theme header {
-  background: linear-gradient(135deg, #141e30, #243b55);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-}
-
-/* Sections */
-.dark-theme section {
-  background: linear-gradient(145deg, #1b1b1b, #232323);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
-/* Карточки */
-.dark-theme .resource-card {
-  background: linear-gradient(145deg, #1f1f1f, #292929);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-  transition: 0.3s ease;
-}
-
-.dark-theme .resource-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-}
-
-/* Задачи */
-.dark-theme #taskList li {
-  background: linear-gradient(145deg, #1c1c1c, #262626);
-  border: 1px solid rgba(255,255,255,0.05);
-}
-
-/* Поле ввода */
-.dark-theme .todo-input input {
-  background: #1e1e1e;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: #ffffff;
-}
-
-/* Кнопка добавления */
-.dark-theme .todo-input button {
-  background: linear-gradient(135deg, #00c6ff, #0072ff);
-  color: white;
-  border: none;
-}
-
-/* Прогресс-бар контейнер */
-.dark-theme #progressBarContainer {
-  background: rgba(255,255,255,0.08);
-}
-
-/* Светящийся прогресс */
-.dark-theme #progressBar {
-  background: linear-gradient(90deg, #00f5ff, #00ff9d);
-  box-shadow: 0 0 15px rgba(0,255,180,0.7);
-  transition: width 0.4s ease;
-}
-
-/* Footer */
-.dark-theme footer {
-  background: linear-gradient(135deg, #141e30, #1c1c1c);
-}
-/* ===== Исправление контраста в DARK THEME ===== */
-
-/* Заголовки */
-.dark-theme h1,
-.dark-theme h2,
-.dark-theme h3 {
-  color: #ffffff;
-}
-
-/* Обычный текст */
-.dark-theme p,
-.dark-theme li,
-.dark-theme span {
   color: #e4e4e4;
 }
 
-/* Ссылки в "Полезные ресурсы" */
-.dark-theme .resource-card a {
-  color: #00f5ff;
-  font-weight: 500;
+/* Header */
+body.dark-theme header {
+  background: linear-gradient(135deg, #141e30, #243b55);
 }
 
-.dark-theme .resource-card a:hover {
-  color: #00ff9d;
+/* Sections */
+body.dark-theme section {
+  background: linear-gradient(145deg, #1b1b1b, #232323);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Кнопки */
-.dark-theme button {
-  color: #ffffff;
+/* Resource cards */
+body.dark-theme .resource-card {
+  background: linear-gradient(145deg, #1f1f1f, #292929);
+  color: #f1f1f1;
 }
 
-/* Кнопка удаления */
-.dark-theme .delete-btn {
-  background: #ff4d4d;
+body.dark-theme .resource-card:hover {
+  box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+}
+
+/* Tasks */
+body.dark-theme #taskList li {
+  background: linear-gradient(145deg, #1c1c1c, #262626);
+  color: #f1f1f1;
+}
+
+/* Input */
+body.dark-theme .todo-input input {
+  background: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.1);
   color: white;
 }
 
-.dark-theme .delete-btn:hover {
-  background: #ff1f1f;
+body.dark-theme input::placeholder {
+  color: #aaa;
 }
 
-/* Поле ввода текста */
-.dark-theme input::placeholder {
-  color: #aaaaaa;
+/* Button */
+body.dark-theme .todo-input button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+}
+
+/* Progress */
+body.dark-theme #progressBarContainer {
+  background: rgba(255,255,255,0.08);
+}
+
+body.dark-theme #progressBar {
+  background: linear-gradient(90deg, #00f5ff, #00ff9d);
+  box-shadow: 0 0 15px rgba(0,255,180,0.7);
+}
+
+/* Footer */
+body.dark-theme footer {
+  background: linear-gradient(135deg, #141e30, #1c1c1c);
+}
+
+/* ============================= */
+/* ===== АДАПТИВ ===== */
+/* ============================= */
+
+@media (max-width: 600px) {
+  #resourceList {
+    flex-direction: column;
+  }
+
+  .resource-card {
+    flex: 1 1 100%;
+  }
+
+  .todo-input {
+    flex-direction: column;
+  }
+
+  .todo-input button {
+    width: 100%;
+  }
 }
