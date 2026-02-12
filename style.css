@@ -210,13 +210,11 @@ section {
   margin-top: 10px;
   overflow: hidden;
 }
-
 #progressBar {
   width: 0%;
   height: 100%;
-  background: linear-gradient(90deg, #50e3c2, #4a90e2);
   border-radius: 8px;
-  transition: width 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out, background 0.4s ease;
 }
 
 /* ============================= */
