@@ -374,3 +374,48 @@ body {
 .dark-theme footer {
   background: linear-gradient(135deg, #141e30, #1c1c1c);
 }
+/* ===== Исправление контраста в DARK THEME ===== */
+
+/* Заголовки */
+.dark-theme h1,
+.dark-theme h2,
+.dark-theme h3 {
+  color: #ffffff;
+}
+
+/* Обычный текст */
+.dark-theme p,
+.dark-theme li,
+.dark-theme span {
+  color: #e4e4e4;
+}
+
+/* Ссылки в "Полезные ресурсы" */
+.dark-theme .resource-card a {
+  color: #00f5ff;
+  font-weight: 500;
+}
+
+.dark-theme .resource-card a:hover {
+  color: #00ff9d;
+}
+
+/* Кнопки */
+.dark-theme button {
+  color: #ffffff;
+}
+
+/* Кнопка удаления */
+.dark-theme .delete-btn {
+  background: #ff4d4d;
+  color: white;
+}
+
+.dark-theme .delete-btn:hover {
+  background: #ff1f1f;
+}
+
+/* Поле ввода текста */
+.dark-theme input::placeholder {
+  color: #aaaaaa;
+}
