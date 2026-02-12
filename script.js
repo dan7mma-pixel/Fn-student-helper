@@ -97,25 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   /* ===== Прогресс ===== */
-  function updateProgress() {
-    const tasks = taskList.querySelectorAll("li");
-    const completed = taskList.querySelectorAll("li.completed");
-
-    const total = tasks.length;
-    const done = completed.length;
-
-    taskCounter.textContent = `Задач выполнено: ${done} / ${total}`;
-    progressBar.style.width = total === 0 ? "0%" : (done / total) * 100 + "%";
-
-    if (total > 0 && done === total && !celebrationShown) {
-      launchCelebration();
-      celebrationShown = true;
-    }
-
-    if (done !== total) {
-      celebrationShown = false;
-    }
-  }
+ 
 
   /* ===== События ===== */
   addTaskBtn.addEventListener("click", addTask);
@@ -146,3 +128,42 @@ document.addEventListener("DOMContentLoaded", function() {
 
   loadTasks();
 });
+
+function updateProgress() {
+  const tasks = taskList.querySelectorAll("li");
+  const completed = taskList.querySelectorAll("li.completed");
+
+  const total = tasks.length;
+  const done = completed.length;
+
+  taskCounter.textContent = `Задач выполнено: ${done} / ${total}`;
+
+  const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+  progressBar.style.width = percent + "%";
+
+  /* ===== ДИНАМИЧЕСКИЙ ЦВЕТ ===== */
+
+  if (percent === 100 && total > 0) {
+    progressBar.style.background = "linear-gradient(90deg, #00ff9d, #00c853)";
+  } 
+  else if (percent >= 70) {
+    progressBar.style.background = "linear-gradient(90deg, #00f5ff, #0072ff)";
+  } 
+  else if (percent >= 30) {
+    progressBar.style.background = "linear-gradient(90deg, #ffd200, #ff9800)";
+  } 
+  else {
+    progressBar.style.background = "linear-gradient(90deg, #ff4d4d, #ff0000)";
+  }
+
+  /* ===== Праздник 100% ===== */
+
+  if (total > 0 && done === total && !celebrationShown) {
+    launchCelebration();
+    celebrationShown = true;
+  }
+
+  if (done !== total) {
+    celebrationShown = false;
+  }
+}
