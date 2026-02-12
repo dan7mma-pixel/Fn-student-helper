@@ -4,6 +4,25 @@ const taskList = document.getElementById("taskList");
 const taskCounter = document.getElementById("taskCounter");
 const progressBar = document.getElementById("progressBar");
 let celebrationShown = false;
+const themeToggle = document.getElementById("themeToggle");
+
+// Проверяем сохранённую тему
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-theme");
+  themeToggle.textContent = "☀️";
+}
+
+themeToggle.addEventListener("click", function() {
+  document.body.classList.toggle("dark-theme");
+
+  if (document.body.classList.contains("dark-theme")) {
+    localStorage.setItem("theme", "dark");
+    themeToggle.textContent = "☀️";
+  } else {
+    localStorage.setItem("theme", "light");
+    themeToggle.textContent = "🌙";
+  }
+});
 
 /* ===== Сохранение ===== */
 function saveTasks() {
