@@ -6,7 +6,6 @@ document.addEventListener("DOMContentLoaded", function() {
   const taskCounter = document.getElementById("taskCounter");
   const progressBar = document.getElementById("progressBar");
   const themeToggle = document.getElementById("themeToggle");
-
   const filterButtons = document.querySelectorAll(".filter-btn");
 
   let currentFilter = "all";
@@ -203,5 +202,4 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   loadTasks();
-
 });
