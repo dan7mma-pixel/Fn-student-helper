@@ -157,13 +157,12 @@ document.addEventListener("DOMContentLoaded", function () {
     addTaskBtn.addEventListener("click", addTask);
   }
 
-  if (taskInput) {
-    taskInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addTask();
-      }
-    });
+ document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addTask();
+  }
+});
   }
 
   // ===== ФИЛЬТР =====
