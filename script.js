@@ -24,12 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // ===== ЭЛЕМЕНТЫ =====
+  const taskForm = document.getElementById("taskForm");
   const taskInput = document.getElementById("taskInput");
   const deadlineInput = document.getElementById("deadlineInput");
-  const addTaskBtn = document.getElementById("addTaskBtn");
   const taskList = document.getElementById("taskList");
   const taskCounter = document.getElementById("taskCounter");
   const progressBar = document.getElementById("progressBar");
+  const filterButtons = document.querySelectorAll(".filters button");
 
   // ===== СОХРАНЕНИЕ =====
   function saveTasks() {
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function checkOverdue(li, deadline, completed) {
     const today = new Date().toISOString().split("T")[0];
 
-    if (!completed && deadline < today) {
+    if (!completed && deadline && deadline < today) {
       li.classList.add("overdue");
     } else {
       li.classList.remove("overdue");
@@ -126,17 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
     taskList.appendChild(li);
   }
 
-  // ===== ЗАГРУЗКА =====
-  function loadTasks() {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.forEach(task => {
-      createTask(task.text, task.completed, task.deadline);
-    });
-    sortTasks();
-    updateProgress();
-  }
-
-  // ===== ДОБАВЛЕНИЕ =====
+  // ===== ДОБАВЛЕНИЕ ЗАДАЧИ (через FORM) =====
   function addTask() {
     const text = taskInput.value.trim();
     const deadline = deadlineInput ? deadlineInput.value : "";
@@ -153,21 +144,15 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProgress();
   }
 
-  if (addTaskBtn) {
-    addTaskBtn.addEventListener("click", addTask);
-  }
-
- document.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    addTask();
-  }
-});
+  // ЛОВИМ SUBMIT ФОРМЫ (Enter + кнопка)
+  if (taskForm) {
+    taskForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      addTask();
+    });
   }
 
   // ===== ФИЛЬТР =====
-  const filterButtons = document.querySelectorAll(".filters button");
-
   filterButtons.forEach(btn => {
     btn.addEventListener("click", function () {
 
@@ -191,6 +176,16 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   });
+
+  // ===== ЗАГРУЗКА =====
+  function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.forEach(task => {
+      createTask(task.text, task.completed, task.deadline);
+    });
+    sortTasks();
+    updateProgress();
+  }
 
   loadTasks();
 
