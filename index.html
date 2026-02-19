@@ -38,11 +38,12 @@
   <section id="todo">
     <h2>Мои задачи</h2>
 
-    <div class="todo-input">
-      <input type="text" id="taskInput" placeholder="Введите новую задачу...">
-      <input type="date" id="deadlineInput">
-      <button id="addTaskBtn">Добавить</button>
-    </div>
+<form id="taskForm" class="todo-input">
+  <input type="text" id="taskInput" placeholder="Введите задачу">
+  <input type="date" id="deadlineInput">
+  <button type="submit" id="addTaskBtn">Добавить</button>
+</form>
+    
 <div class="filters">
   <button data-filter="all" class="active">Все</button>
   <button data-filter="active">Активные</button>
