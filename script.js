@@ -1,324 +1,145 @@
 console.log("JS загружен");
 
-document.addEventListener("DOMContentLoaded", function() {
+const taskInput = document.getElementById("taskInput");
+const deadlineInput = document.getElementById("deadlineInput");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const taskList = document.getElementById("taskList");
 
-  const taskInput = document.getElementById("taskInput");
-  const addTaskBtn = document.getElementById("addTaskBtn");
-  const taskList = document.getElementById("taskList");
-  const taskCounter = document.getElementById("taskCounter");
-  const progressBar = document.getElementById("progressBar");
-  const themeToggle = document.getElementById("themeToggle");
-  const filterButtons = document.querySelectorAll(".filter-btn");
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-  let currentFilter = "all";
-  let celebrationShown = false;
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
-  /* ===== ТЕМА ===== */
+function getDeadlineStatus(dateString) {
+  if (!dateString) return null;
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-theme");
-    if (themeToggle) themeToggle.textContent = "☀️";
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const deadline = new Date(dateString);
+  deadline.setHours(0,0,0,0);
+
+  if (deadline < today) return "overdue";
+  if (deadline.getTime() === today.getTime()) return "today";
+  return "future";
+}
+
+function createTaskElement(task, index) {
+  const li = document.createElement("li");
+  li.draggable = true;
+
+  if (task.completed) li.classList.add("completed");
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = task.text;
+
+  if (task.deadline) {
+    const deadlineSpan = document.createElement("span");
+    deadlineSpan.classList.add("deadline");
+
+    const status = getDeadlineStatus(task.deadline);
+    if (status) deadlineSpan.classList.add(status);
+
+    deadlineSpan.textContent = ` (${task.deadline})`;
+    textSpan.appendChild(deadlineSpan);
   }
 
-  if (themeToggle) {
-    themeToggle.addEventListener("click", function() {
-      document.body.classList.toggle("dark-theme");
+  li.appendChild(textSpan);
 
-      if (document.body.classList.contains("dark-theme")) {
-        localStorage.setItem("theme", "dark");
-        themeToggle.textContent = "☀️";
-      } else {
-        localStorage.setItem("theme", "light");
-        themeToggle.textContent = "🌙";
-      }
-    });
-  }
-
-  /* ===== Сохранение ===== */
-
-  function saveTasks() {
-    const tasks = [];
-    taskList.querySelectorAll("li").forEach(li => {
-      tasks.push({
-        text: li.querySelector(".task-text").textContent,
-        completed: li.classList.contains("completed")
-      });
-    });
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }
-
-  /* ===== Загрузка ===== */
-
-  function loadTasks() {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.forEach(task => createTask(task.text, task.completed));
-    updateProgress();
-  }
-
-  /* ===== Создание задачи ===== */
-
-  function createTask(text, completed = false) {
-
-    const li = document.createElement("li");
-    li.draggable = true;
-    if (completed) li.classList.add("completed");
-
-    /* ===== DRAG ===== */
-
-    li.addEventListener("dragstart", () => {
-      li.classList.add("dragging");
-    });
-
-    li.addEventListener("dragend", () => {
-      li.classList.remove("dragging");
-      saveTasks();
-    });
-
-    /* ===== ТЕКСТ ===== */
-
-    const span = document.createElement("span");
-    span.textContent = text;
-    span.classList.add("task-text");
-
-    /* ===== РЕДАКТИРОВАНИЕ ===== */
-
-    span.addEventListener("dblclick", function (e) {
-      e.stopPropagation();
-
-      const inputEdit = document.createElement("input");
-      inputEdit.type = "text";
-      inputEdit.value = span.textContent;
-      inputEdit.classList.add("edit-input");
-
-      li.replaceChild(inputEdit, span);
-      inputEdit.focus();
-      inputEdit.select();
-
-      function saveEdit() {
-        const newValue = inputEdit.value.trim();
-        if (newValue !== "") {
-          span.textContent = newValue;
-        }
-        li.replaceChild(span, inputEdit);
-        saveTasks();
-      }
-
-      function cancelEdit() {
-        li.replaceChild(span, inputEdit);
-      }
-
-      inputEdit.addEventListener("keydown", function (e) {
-        if (e.key === "Enter") saveEdit();
-        if (e.key === "Escape") cancelEdit();
-      });
-
-      inputEdit.addEventListener("blur", saveEdit);
-    });
-
-    li.appendChild(span);
-    li.classList.add("task-appear");
-
-    /* ===== КЛИК — ВЫПОЛНЕНО ===== */
-
-    li.addEventListener("click", function() {
-      li.classList.toggle("completed");
-      updateProgress();
-      saveTasks();
-    });
-
-    /* ===== КНОПКИ СОРТИРОВКИ ===== */
-
-    const upBtn = document.createElement("button");
-    upBtn.textContent = "↑";
-    upBtn.classList.add("move-btn");
-
-    upBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const prev = li.previousElementSibling;
-      if (prev) {
-        taskList.insertBefore(li, prev);
-        saveTasks();
-      }
-    });
-
-    const downBtn = document.createElement("button");
-    downBtn.textContent = "↓";
-    downBtn.classList.add("move-btn");
-
-    downBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const next = li.nextElementSibling;
-      if (next) {
-        taskList.insertBefore(next, li);
-        saveTasks();
-      }
-    });
-
-    /* ===== УДАЛЕНИЕ ===== */
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "✕";
-    deleteBtn.classList.add("delete-btn");
-
-    deleteBtn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      li.classList.add("task-remove");
-      setTimeout(() => {
-        li.remove();
-        updateProgress();
-        saveTasks();
-      }, 300);
-    });
-
-    /* ===== ДОБАВЛЯЕМ В ЭЛЕМЕНТ ===== */
-
-    li.appendChild(upBtn);
-    li.appendChild(downBtn);
-    li.appendChild(deleteBtn);
-
-    taskList.appendChild(li);
-  }
-
-  /* ===== DRAG LOGIC ===== */
-
-  taskList.addEventListener("dragover", function (e) {
-    e.preventDefault();
-
-    const dragging = document.querySelector(".dragging");
-    const afterElement = getDragAfterElement(taskList, e.clientY);
-
-    if (!dragging) return;
-
-    if (afterElement == null) {
-      taskList.appendChild(dragging);
-    } else {
-      taskList.insertBefore(dragging, afterElement);
-    }
-  });
-
-  function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll("li:not(.dragging)")];
-
-    return draggableElements.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = y - box.top - box.height / 2;
-
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
-      } else {
-        return closest;
-      }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-
-  /* ===== Добавление ===== */
-
-  function addTask() {
-    const taskText = taskInput.value.trim();
-    if (!taskText) return;
-
-    createTask(taskText);
-    taskInput.value = "";
-    updateProgress();
+  // toggle complete
+  li.addEventListener("click", () => {
+    tasks[index].completed = !tasks[index].completed;
     saveTasks();
-  }
-
-  /* ===== Прогресс ===== */
-
-  function updateProgress() {
-    const tasks = taskList.querySelectorAll("li");
-    const completed = taskList.querySelectorAll("li.completed");
-
-    const total = tasks.length;
-    const done = completed.length;
-
-    taskCounter.textContent = `Задач выполнено: ${done} / ${total}`;
-
-    const percent = total === 0 ? 0 : Math.round((done / total) * 100);
-    progressBar.style.width = percent + "%";
-
-    if (percent === 100 && total > 0) {
-      progressBar.style.background = "linear-gradient(90deg, #00ff9d, #00c853)";
-    } 
-    else if (percent >= 70) {
-      progressBar.style.background = "linear-gradient(90deg, #00f5ff, #0072ff)";
-    } 
-    else if (percent >= 30) {
-      progressBar.style.background = "linear-gradient(90deg, #ffd200, #ff9800)";
-    } 
-    else {
-      progressBar.style.background = "linear-gradient(90deg, #ff4d4d, #ff0000)";
-    }
-
-    if (total > 0 && done === total && !celebrationShown) {
-      launchCelebration();
-      celebrationShown = true;
-    }
-
-    if (done !== total) {
-      celebrationShown = false;
-    }
-
-    applyFilter();
-  }
-
-  /* ===== Фильтр ===== */
-
-  function applyFilter() {
-    const tasks = taskList.querySelectorAll("li");
-
-    tasks.forEach(task => {
-      const isCompleted = task.classList.contains("completed");
-
-      if (currentFilter === "all") {
-        task.style.display = "flex";
-      } 
-      else if (currentFilter === "active") {
-        task.style.display = isCompleted ? "none" : "flex";
-      } 
-      else if (currentFilter === "completed") {
-        task.style.display = isCompleted ? "flex" : "none";
-      }
-    });
-  }
-
-  filterButtons.forEach(button => {
-    button.addEventListener("click", function() {
-      filterButtons.forEach(btn => btn.classList.remove("active"));
-      this.classList.add("active");
-      currentFilter = this.dataset.filter;
-      applyFilter();
-    });
+    renderTasks();
   });
 
-  /* ===== События ===== */
-
-  addTaskBtn.addEventListener("click", addTask);
-
-  taskInput.addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTask();
-    }
+  // delete button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "✕";
+  deleteBtn.classList.add("delete-btn");
+  deleteBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    tasks.splice(index, 1);
+    saveTasks();
+    renderTasks();
   });
 
-  /* ===== Праздник ===== */
+  li.appendChild(deleteBtn);
 
-  function launchCelebration() {
-    const celebration = document.createElement("div");
-    celebration.classList.add("celebration");
-    celebration.textContent = "🎉 Все задачи выполнены! Отличная работа!";
+  // drag events
+  li.addEventListener("dragstart", () => {
+    li.classList.add("dragging");
+  });
 
-    document.body.appendChild(celebration);
+  li.addEventListener("dragend", () => {
+    li.classList.remove("dragging");
+    updateOrder();
+  });
 
-    setTimeout(() => {
-      celebration.classList.add("celebration-hide");
-    }, 1800);
+  return li;
+}
 
-    setTimeout(() => {
-      celebration.remove();
-    }, 2500);
+function renderTasks() {
+  taskList.innerHTML = "";
+  tasks.forEach((task, index) => {
+    taskList.appendChild(createTaskElement(task, index));
+  });
+}
+
+function addTask() {
+  const text = taskInput.value.trim();
+  const deadline = deadlineInput.value;
+
+  if (!text) return;
+
+  tasks.push({
+    text,
+    completed: false,
+    deadline
+  });
+
+  saveTasks();
+  renderTasks();
+
+  taskInput.value = "";
+  deadlineInput.value = "";
+}
+
+function updateOrder() {
+  const newTasks = [];
+  document.querySelectorAll("#taskList li").forEach((li) => {
+    const text = li.querySelector("span").childNodes[0].textContent;
+    const task = tasks.find(t => t.text === text);
+    if (task) newTasks.push(task);
+  });
+  tasks = newTasks;
+  saveTasks();
+}
+
+taskList.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  const dragging = document.querySelector(".dragging");
+  const afterElement = getDragAfterElement(taskList, e.clientY);
+  if (afterElement == null) {
+    taskList.appendChild(dragging);
+  } else {
+    taskList.insertBefore(dragging, afterElement);
   }
-
-  loadTasks();
 });
+
+function getDragAfterElement(container, y) {
+  const elements = [...container.querySelectorAll("li:not(.dragging)")];
+  return elements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+addTaskBtn.addEventListener("click", addTask);
+renderTasks();
