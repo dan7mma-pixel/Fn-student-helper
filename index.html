@@ -10,14 +10,14 @@
 <header>
   <h1>FU Student Helper</h1>
   <p>Ваш помощник в учёбе и организации!</p>
+  <button id="themeToggle" class="theme-btn">🌙 Тёмная тема</button>
 </header>
 
 <main>
 
-  <!-- ===== Instructions ===== -->
   <section id="instructions">
     <h2>Инструкции</h2>
-    <button id="tipsBtn">Показать советы</button>
+    <button onclick="showTips()">Показать советы</button>
     <div id="tips">
       <div class="tip-card"><span>💡</span><p>Планируй день заранее.</p></div>
       <div class="tip-card"><span>📝</span><p>Делай заметки во время лекций.</p></div>
@@ -25,23 +25,22 @@
     </div>
   </section>
 
-  <!-- ===== Resources ===== -->
   <section id="resources">
     <h2>Полезные ресурсы</h2>
-    <button id="resourcesBtn">Показать ресурсы</button>
+    <button onclick="toggleResources()">Показать ресурсы</button>
     <div id="resourceList">
-      <a href="https://example.com" target="_blank" class="resource-card">Сайт 1</a>
-      <a href="https://example.com" target="_blank" class="resource-card">Сайт 2</a>
-      <a href="https://example.com" target="_blank" class="resource-card">Сайт 3</a>
+      <a href="https://example.com" target="_blank" class="resource-card"><span>Сайт 1</span></a>
+      <a href="https://example.com" target="_blank" class="resource-card"><span>Сайт 2</span></a>
+      <a href="https://example.com" target="_blank" class="resource-card"><span>Сайт 3</span></a>
     </div>
   </section>
 
-  <!-- ===== To-Do ===== -->
   <section id="todo">
     <h2>Мои задачи</h2>
 
     <div class="todo-input">
       <input type="text" id="taskInput" placeholder="Введите новую задачу...">
+      <input type="date" id="deadlineInput">
       <button id="addTaskBtn">Добавить</button>
     </div>
 
@@ -50,27 +49,6 @@
     <div id="taskCounter">Выполнено 0 из 0</div>
     <div id="progressBarContainer">
       <div id="progressBar"></div>
-    </div>
-  </section>
-
-  <!-- ===== Calendar ===== -->
-  <section id="calendar">
-    <h2>Календарь</h2>
-    <div id="calendarContainer">
-      <div id="calendarHeader">
-        <button id="prevMonth">&lt;</button>
-        <span id="monthYear"></span>
-        <button id="nextMonth">&gt;</button>
-      </div>
-      <table id="calendarTable">
-        <thead>
-          <tr>
-            <th>Пн</th><th>Вт</th><th>Ср</th><th>Чт</th>
-            <th>Пт</th><th>Сб</th><th>Вс</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
     </div>
   </section>
 
