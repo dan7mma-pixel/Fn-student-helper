@@ -1,31 +1,78 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function() {
+
+  // ===== Тёмная тема =====
+  const themeToggle = document.getElementById("themeToggle");
+
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeToggle.textContent = "☀ Светлая тема";
+  }
+
+  themeToggle.addEventListener("click", function() {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+      localStorage.setItem("theme", "dark");
+      themeToggle.textContent = "☀ Светлая тема";
+    } else {
+      localStorage.setItem("theme", "light");
+      themeToggle.textContent = "🌙 Тёмная тема";
+    }
+  });
 
   // ===== Tips & Resources =====
-  const tipsBtn = document.getElementById("tipsBtn");
-  const resourcesBtn = document.getElementById("resourcesBtn");
+  window.showTips = function() {
+    const tips = document.getElementById('tips');
+    const btn = document.querySelector('#instructions button');
+    tips.classList.toggle('show');
+    const cards = tips.querySelectorAll('.tip-card');
 
-  tipsBtn.addEventListener("click", () => {
-    document.getElementById("tips").classList.toggle("show");
-  });
+    cards.forEach((card, i) => {
+      if (tips.classList.contains('show')) {
+        setTimeout(() => card.classList.add('show'), i * 250);
+      } else {
+        card.classList.remove('show');
+      }
+    });
 
-  resourcesBtn.addEventListener("click", () => {
-    document.getElementById("resourceList").classList.toggle("show");
-  });
+    btn.textContent = tips.classList.contains('show')
+      ? 'Скрыть советы'
+      : 'Показать советы';
+  }
+
+  window.toggleResources = function() {
+    const list = document.getElementById('resourceList');
+    const btn = document.querySelector('#resources button');
+    list.classList.toggle('show');
+    const cards = list.querySelectorAll('.resource-card');
+
+    cards.forEach((card, i) => {
+      if (list.classList.contains('show')) {
+        setTimeout(() => card.classList.add('show'), i * 250);
+      } else {
+        card.classList.remove('show');
+      }
+    });
+
+    btn.textContent = list.classList.contains('show')
+      ? 'Скрыть ресурсы'
+      : 'Показать ресурсы';
+  }
 
   // ===== Reveal Sections =====
   function revealSections() {
-    document.querySelectorAll("section").forEach(section => {
+    document.querySelectorAll('section').forEach(section => {
       if (section.getBoundingClientRect().top < window.innerHeight * 0.85) {
-        section.classList.add("visible");
+        section.classList.add('visible');
       }
     });
   }
-
-  window.addEventListener("scroll", revealSections);
+  window.addEventListener('scroll', revealSections);
   revealSections();
 
   // ===== To-Do =====
   const taskInput = document.getElementById("taskInput");
+  const deadlineInput = document.getElementById("deadlineInput");
   const addTaskBtn = document.getElementById("addTaskBtn");
   const taskList = document.getElementById("taskList");
   const taskCounter = document.getElementById("taskCounter");
@@ -36,32 +83,51 @@ document.addEventListener("DOMContentLoaded", function () {
     taskList.querySelectorAll("li").forEach(li => {
       tasks.push({
         text: li.querySelector(".taskText").textContent,
-        completed: li.classList.contains("completed")
+        completed: li.classList.contains("completed"),
+        deadline: li.dataset.deadline || null
       });
     });
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 
   function updateProgress() {
-    const tasks = taskList.querySelectorAll("li");
-    const total = tasks.length;
+    const total = taskList.querySelectorAll("li").length;
     const completed = taskList.querySelectorAll("li.completed").length;
 
     taskCounter.textContent = `Выполнено ${completed} из ${total}`;
-    progressBar.style.width = total === 0 ? "0%" : (completed / total * 100) + "%";
+    progressBar.style.width =
+      total === 0 ? "0%" : (completed / total * 100) + "%";
   }
 
-  function createTaskElement(text, completed) {
+  function createTaskElement(text, completed, deadline) {
     const li = document.createElement("li");
     if (completed) li.classList.add("completed");
+    if (deadline) li.dataset.deadline = deadline;
+
+    const leftDiv = document.createElement("div");
 
     const span = document.createElement("span");
     span.className = "taskText";
     span.textContent = text;
 
-    li.appendChild(span);
+    leftDiv.appendChild(span);
 
-    li.addEventListener("click", () => {
+    if (deadline) {
+      const dateSpan = document.createElement("div");
+      dateSpan.className = "deadline";
+      dateSpan.textContent = "До: " + deadline;
+
+      const today = new Date().toISOString().split("T")[0];
+      if (deadline < today) {
+        dateSpan.classList.add("overdue");
+      }
+
+      leftDiv.appendChild(dateSpan);
+    }
+
+    li.appendChild(leftDiv);
+
+    li.addEventListener("click", function() {
       li.classList.toggle("completed");
       saveTasks();
       updateProgress();
@@ -70,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "X";
     deleteBtn.className = "delete-btn";
-    deleteBtn.addEventListener("click", e => {
+    deleteBtn.addEventListener("click", function(e) {
       e.stopPropagation();
       li.remove();
       saveTasks();
@@ -83,15 +149,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.forEach(t => createTaskElement(t.text, t.completed));
+    tasks.forEach(t => createTaskElement(t.text, t.completed, t.deadline));
     updateProgress();
   }
 
   function addTask() {
     const text = taskInput.value.trim();
+    const deadline = deadlineInput.value;
     if (!text) return;
-    createTaskElement(text, false);
+
+    createTaskElement(text, false, deadline);
     taskInput.value = "";
+    deadlineInput.value = "";
     saveTasks();
     updateProgress();
   }
@@ -102,74 +171,4 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   loadTasks();
-
-  // ===== Calendar =====
-  const monthYear = document.getElementById("monthYear");
-  const calendarBody = document.querySelector("#calendarTable tbody");
-  const prevMonthBtn = document.getElementById("prevMonth");
-  const nextMonthBtn = document.getElementById("nextMonth");
-
-  let currentDate = new Date();
-
-  function renderCalendar(date) {
-    calendarBody.innerHTML = "";
-
-    const year = date.getFullYear();
-    const month = date.getMonth();
-
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-
-    monthYear.textContent = date.toLocaleString("ru-RU", {
-      month: "long",
-      year: "numeric"
-    });
-
-    let startDay = firstDay.getDay();
-    startDay = startDay === 0 ? 6 : startDay - 1;
-
-    let row = document.createElement("tr");
-
-    for (let i = 0; i < startDay; i++) {
-      row.appendChild(document.createElement("td"));
-    }
-
-    for (let day = 1; day <= lastDay.getDate(); day++) {
-      if (row.children.length === 7) {
-        calendarBody.appendChild(row);
-        row = document.createElement("tr");
-      }
-
-      const cell = document.createElement("td");
-      cell.textContent = day;
-
-      const today = new Date();
-      if (
-        day === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear()
-      ) {
-        cell.style.backgroundColor = "#4a90e2";
-        cell.style.color = "white";
-        cell.style.borderRadius = "6px";
-      }
-
-      row.appendChild(cell);
-    }
-
-    calendarBody.appendChild(row);
-  }
-
-  prevMonthBtn.addEventListener("click", () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar(currentDate);
-  });
-
-  nextMonthBtn.addEventListener("click", () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar(currentDate);
-  });
-
-  renderCalendar(currentDate);
-
 });
