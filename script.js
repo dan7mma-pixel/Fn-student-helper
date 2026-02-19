@@ -1,229 +1,175 @@
-/* ============================= */
-/* ===== ЭЛЕМЕНТЫ ===== */
-/* ============================= */
+document.addEventListener("DOMContentLoaded", function () {
 
-const taskInput = document.getElementById("taskInput");
-const deadlineInput = document.getElementById("deadlineInput");
-const addTaskBtn = document.getElementById("addTaskBtn");
-const taskList = document.getElementById("taskList");
-const themeBtn = document.querySelector(".theme-btn");
+  // ===== Tips & Resources =====
+  const tipsBtn = document.getElementById("tipsBtn");
+  const resourcesBtn = document.getElementById("resourcesBtn");
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-
-/* ============================= */
-/* ===== ТЁМНАЯ ТЕМА ===== */
-/* ============================= */
-
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark-theme");
-}
-
-if (themeBtn) {
-  themeBtn.addEventListener("click", function () {
-    document.body.classList.toggle("dark-theme");
-
-    if (document.body.classList.contains("dark-theme")) {
-      localStorage.setItem("theme", "dark");
-    } else {
-      localStorage.setItem("theme", "light");
-    }
+  tipsBtn.addEventListener("click", () => {
+    document.getElementById("tips").classList.toggle("show");
   });
-}
 
+  resourcesBtn.addEventListener("click", () => {
+    document.getElementById("resourceList").classList.toggle("show");
+  });
 
-/* ============================= */
-/* ===== LOCAL STORAGE ===== */
-/* ============================= */
-
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-
-/* ============================= */
-/* ===== ДЕДЛАЙН ===== */
-/* ============================= */
-
-function getDeadlineStatus(dateString) {
-  if (!dateString) return null;
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const deadline = new Date(dateString);
-  deadline.setHours(0, 0, 0, 0);
-
-  if (deadline < today) return "overdue";
-  if (deadline.getTime() === today.getTime()) return "today";
-  return "future";
-}
-
-
-/* ============================= */
-/* ===== СОЗДАНИЕ ===== */
-/* ============================= */
-
-function createTaskElement(task, index) {
-  const li = document.createElement("li");
-  li.draggable = true;
-
-  if (task.completed) {
-    li.classList.add("completed");
+  // ===== Reveal Sections =====
+  function revealSections() {
+    document.querySelectorAll("section").forEach(section => {
+      if (section.getBoundingClientRect().top < window.innerHeight * 0.85) {
+        section.classList.add("visible");
+      }
+    });
   }
 
-  const wrapper = document.createElement("div");
-  wrapper.style.display = "flex";
-  wrapper.style.alignItems = "center";
-  wrapper.style.gap = "10px";
+  window.addEventListener("scroll", revealSections);
+  revealSections();
 
-  const textSpan = document.createElement("span");
-  textSpan.textContent = task.text;
-  wrapper.appendChild(textSpan);
+  // ===== To-Do =====
+  const taskInput = document.getElementById("taskInput");
+  const addTaskBtn = document.getElementById("addTaskBtn");
+  const taskList = document.getElementById("taskList");
+  const taskCounter = document.getElementById("taskCounter");
+  const progressBar = document.getElementById("progressBar");
 
-  if (task.deadline) {
-    const deadlineSpan = document.createElement("span");
-    deadlineSpan.classList.add("deadline");
-
-    const status = getDeadlineStatus(task.deadline);
-    if (status) deadlineSpan.classList.add(status);
-
-    deadlineSpan.textContent = `(${task.deadline})`;
-    wrapper.appendChild(deadlineSpan);
+  function saveTasks() {
+    const tasks = [];
+    taskList.querySelectorAll("li").forEach(li => {
+      tasks.push({
+        text: li.querySelector(".taskText").textContent,
+        completed: li.classList.contains("completed")
+      });
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 
-  li.appendChild(wrapper);
+  function updateProgress() {
+    const tasks = taskList.querySelectorAll("li");
+    const total = tasks.length;
+    const completed = taskList.querySelectorAll("li.completed").length;
 
-  /* Toggle */
-  li.addEventListener("click", function () {
-    tasks[index].completed = !tasks[index].completed;
+    taskCounter.textContent = `Выполнено ${completed} из ${total}`;
+    progressBar.style.width = total === 0 ? "0%" : (completed / total * 100) + "%";
+  }
+
+  function createTaskElement(text, completed) {
+    const li = document.createElement("li");
+    if (completed) li.classList.add("completed");
+
+    const span = document.createElement("span");
+    span.className = "taskText";
+    span.textContent = text;
+
+    li.appendChild(span);
+
+    li.addEventListener("click", () => {
+      li.classList.toggle("completed");
+      saveTasks();
+      updateProgress();
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "X";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.addEventListener("click", e => {
+      e.stopPropagation();
+      li.remove();
+      saveTasks();
+      updateProgress();
+    });
+
+    li.appendChild(deleteBtn);
+    taskList.appendChild(li);
+  }
+
+  function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    tasks.forEach(t => createTaskElement(t.text, t.completed));
+    updateProgress();
+  }
+
+  function addTask() {
+    const text = taskInput.value.trim();
+    if (!text) return;
+    createTaskElement(text, false);
+    taskInput.value = "";
     saveTasks();
-    renderTasks();
-  });
-
-  /* Delete */
-  const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "✕";
-  deleteBtn.classList.add("delete-btn");
-
-  deleteBtn.addEventListener("click", function (e) {
-    e.stopPropagation();
-    tasks.splice(index, 1);
-    saveTasks();
-    renderTasks();
-  });
-
-  li.appendChild(deleteBtn);
-
-  /* Drag */
-  li.addEventListener("dragstart", () => li.classList.add("dragging"));
-  li.addEventListener("dragend", () => {
-    li.classList.remove("dragging");
-    updateOrder();
-  });
-
-  return li;
-}
-
-
-/* ============================= */
-/* ===== РЕНДЕР ===== */
-/* ============================= */
-
-function renderTasks() {
-  taskList.innerHTML = "";
-  tasks.forEach((task, index) => {
-    taskList.appendChild(createTaskElement(task, index));
-  });
-}
-
-
-/* ============================= */
-/* ===== ДОБАВЛЕНИЕ ===== */
-/* ============================= */
-
-function addTask() {
-  const text = taskInput.value.trim();
-  const deadline = deadlineInput.value;
-
-  if (!text) return;
-
-  tasks.push({
-    text,
-    completed: false,
-    deadline
-  });
-
-  saveTasks();
-  renderTasks();
-
-  taskInput.value = "";
-  deadlineInput.value = "";
-}
-
-addTaskBtn.addEventListener("click", addTask);
-
-/* ENTER */
-taskInput.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    addTask();
+    updateProgress();
   }
-});
 
-deadlineInput.addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
-    addTask();
-  }
-});
+  addTaskBtn.addEventListener("click", addTask);
+  taskInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") addTask();
+  });
 
+  loadTasks();
 
-/* ============================= */
-/* ===== DRAG ===== */
-/* ============================= */
+  // ===== Calendar =====
+  const monthYear = document.getElementById("monthYear");
+  const calendarBody = document.querySelector("#calendarTable tbody");
+  const prevMonthBtn = document.getElementById("prevMonth");
+  const nextMonthBtn = document.getElementById("nextMonth");
 
-taskList.addEventListener("dragover", function (e) {
-  e.preventDefault();
-  const dragging = document.querySelector(".dragging");
-  const afterElement = getDragAfterElement(taskList, e.clientY);
+  let currentDate = new Date();
 
-  if (!afterElement) {
-    taskList.appendChild(dragging);
-  } else {
-    taskList.insertBefore(dragging, afterElement);
-  }
-});
+  function renderCalendar(date) {
+    calendarBody.innerHTML = "";
 
-function getDragAfterElement(container, y) {
-  const elements = [...container.querySelectorAll("li:not(.dragging)")];
+    const year = date.getFullYear();
+    const month = date.getMonth();
 
-  return elements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
 
-    if (offset < 0 && offset > closest.offset) {
-      return { offset, element: child };
-    } else {
-      return closest;
+    monthYear.textContent = date.toLocaleString("ru-RU", {
+      month: "long",
+      year: "numeric"
+    });
+
+    let startDay = firstDay.getDay();
+    startDay = startDay === 0 ? 6 : startDay - 1;
+
+    let row = document.createElement("tr");
+
+    for (let i = 0; i < startDay; i++) {
+      row.appendChild(document.createElement("td"));
     }
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
 
-function updateOrder() {
-  const newTasks = [];
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      if (row.children.length === 7) {
+        calendarBody.appendChild(row);
+        row = document.createElement("tr");
+      }
 
-  document.querySelectorAll("#taskList li").forEach(li => {
-    const text = li.querySelector("span").textContent.replace(/\(\d{4}-\d{2}-\d{2}\)/, "").trim();
-    const task = tasks.find(t => t.text === text);
-    if (task) newTasks.push(task);
+      const cell = document.createElement("td");
+      cell.textContent = day;
+
+      const today = new Date();
+      if (
+        day === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        cell.style.backgroundColor = "#4a90e2";
+        cell.style.color = "white";
+        cell.style.borderRadius = "6px";
+      }
+
+      row.appendChild(cell);
+    }
+
+    calendarBody.appendChild(row);
+  }
+
+  prevMonthBtn.addEventListener("click", () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar(currentDate);
   });
 
-  tasks = newTasks;
-  saveTasks();
-}
+  nextMonthBtn.addEventListener("click", () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar(currentDate);
+  });
 
+  renderCalendar(currentDate);
 
-/* ============================= */
-/* ===== СТАРТ ===== */
-/* ============================= */
-
-renderTasks();
+});
