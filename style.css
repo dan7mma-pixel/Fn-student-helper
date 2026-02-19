@@ -536,3 +536,33 @@ body.dark #taskList li {
 body.dark footer {
   background-color: #111;
 }
+/* ===== Просроченные ===== */
+.overdue {
+  background-color: rgba(255, 0, 0, 0.15);
+  border-left: 5px solid crimson;
+}
+
+.deadline {
+  font-size: 0.85em;
+  opacity: 0.7;
+  margin-left: 10px;
+}
+
+/* ===== Фильтр ===== */
+.filters {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.filters button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.filters button.active {
+  background-color: #4a90e2;
+  color: white;
+}
