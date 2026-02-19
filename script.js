@@ -1,76 +1,29 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-  // ===== Тёмная тема =====
+  // ===== ТЁМНАЯ ТЕМА =====
   const themeToggle = document.getElementById("themeToggle");
 
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-    themeToggle.textContent = "☀ Светлая тема";
-  }
+  if (themeToggle) {
 
-  themeToggle.addEventListener("click", function() {
-    document.body.classList.toggle("dark");
-
-    if (document.body.classList.contains("dark")) {
-      localStorage.setItem("theme", "dark");
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark");
       themeToggle.textContent = "☀ Светлая тема";
-    } else {
-      localStorage.setItem("theme", "light");
-      themeToggle.textContent = "🌙 Тёмная тема";
     }
-  });
 
-  // ===== Tips & Resources =====
-  window.showTips = function() {
-    const tips = document.getElementById('tips');
-    const btn = document.querySelector('#instructions button');
-    tips.classList.toggle('show');
-    const cards = tips.querySelectorAll('.tip-card');
+    themeToggle.addEventListener("click", function () {
+      document.body.classList.toggle("dark");
 
-    cards.forEach((card, i) => {
-      if (tips.classList.contains('show')) {
-        setTimeout(() => card.classList.add('show'), i * 250);
+      if (document.body.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
+        themeToggle.textContent = "☀ Светлая тема";
       } else {
-        card.classList.remove('show');
-      }
-    });
-
-    btn.textContent = tips.classList.contains('show')
-      ? 'Скрыть советы'
-      : 'Показать советы';
-  }
-
-  window.toggleResources = function() {
-    const list = document.getElementById('resourceList');
-    const btn = document.querySelector('#resources button');
-    list.classList.toggle('show');
-    const cards = list.querySelectorAll('.resource-card');
-
-    cards.forEach((card, i) => {
-      if (list.classList.contains('show')) {
-        setTimeout(() => card.classList.add('show'), i * 250);
-      } else {
-        card.classList.remove('show');
-      }
-    });
-
-    btn.textContent = list.classList.contains('show')
-      ? 'Скрыть ресурсы'
-      : 'Показать ресурсы';
-  }
-
-  // ===== Reveal Sections =====
-  function revealSections() {
-    document.querySelectorAll('section').forEach(section => {
-      if (section.getBoundingClientRect().top < window.innerHeight * 0.85) {
-        section.classList.add('visible');
+        localStorage.setItem("theme", "light");
+        themeToggle.textContent = "🌙 Тёмная тема";
       }
     });
   }
-  window.addEventListener('scroll', revealSections);
-  revealSections();
 
-  // ===== To-Do =====
+  // ===== TO DO =====
   const taskInput = document.getElementById("taskInput");
   const deadlineInput = document.getElementById("deadlineInput");
   const addTaskBtn = document.getElementById("addTaskBtn");
@@ -84,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
       tasks.push({
         text: li.querySelector(".taskText").textContent,
         completed: li.classList.contains("completed"),
-        deadline: li.dataset.deadline || null
+        deadline: li.dataset.deadline || ""
       });
     });
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -95,39 +48,31 @@ document.addEventListener("DOMContentLoaded", function() {
     const completed = taskList.querySelectorAll("li.completed").length;
 
     taskCounter.textContent = `Выполнено ${completed} из ${total}`;
+
     progressBar.style.width =
       total === 0 ? "0%" : (completed / total * 100) + "%";
   }
 
-  function createTaskElement(text, completed, deadline) {
+  function createTask(text, completed, deadline) {
     const li = document.createElement("li");
+
     if (completed) li.classList.add("completed");
     if (deadline) li.dataset.deadline = deadline;
 
-    const leftDiv = document.createElement("div");
+    const textSpan = document.createElement("span");
+    textSpan.className = "taskText";
+    textSpan.textContent = text;
 
-    const span = document.createElement("span");
-    span.className = "taskText";
-    span.textContent = text;
-
-    leftDiv.appendChild(span);
+    li.appendChild(textSpan);
 
     if (deadline) {
-      const dateSpan = document.createElement("div");
-      dateSpan.className = "deadline";
-      dateSpan.textContent = "До: " + deadline;
-
-      const today = new Date().toISOString().split("T")[0];
-      if (deadline < today) {
-        dateSpan.classList.add("overdue");
-      }
-
-      leftDiv.appendChild(dateSpan);
+      const dateDiv = document.createElement("div");
+      dateDiv.className = "deadline";
+      dateDiv.textContent = "До: " + deadline;
+      li.appendChild(dateDiv);
     }
 
-    li.appendChild(leftDiv);
-
-    li.addEventListener("click", function() {
+    li.addEventListener("click", function () {
       li.classList.toggle("completed");
       saveTasks();
       updateProgress();
@@ -136,7 +81,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "X";
     deleteBtn.className = "delete-btn";
-    deleteBtn.addEventListener("click", function(e) {
+
+    deleteBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       li.remove();
       saveTasks();
@@ -149,26 +95,40 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function loadTasks() {
     const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks.forEach(t => createTaskElement(t.text, t.completed, t.deadline));
+    tasks.forEach(task => {
+      createTask(task.text, task.completed, task.deadline);
+    });
     updateProgress();
   }
 
   function addTask() {
     const text = taskInput.value.trim();
-    const deadline = deadlineInput.value;
+    const deadline = deadlineInput ? deadlineInput.value : "";
+
     if (!text) return;
 
-    createTaskElement(text, false, deadline);
+    createTask(text, false, deadline);
+
     taskInput.value = "";
-    deadlineInput.value = "";
+    if (deadlineInput) deadlineInput.value = "";
+
     saveTasks();
     updateProgress();
   }
 
-  addTaskBtn.addEventListener("click", addTask);
-  taskInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") addTask();
-  });
+  if (addTaskBtn) {
+    addTaskBtn.addEventListener("click", addTask);
+  }
+
+  if (taskInput) {
+    taskInput.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addTask();
+      }
+    });
+  }
 
   loadTasks();
+
 });
