@@ -459,3 +459,38 @@ li.dragging {
 .dark-theme .move-btn:hover {
   background: rgba(255,255,255,0.2);
 }
+/* ============================= */
+/* ===== DEADLINES ===== */
+/* ============================= */
+
+.deadline {
+  font-size: 0.8em;
+  margin-left: 10px;
+  opacity: 0.8;
+}
+
+.deadline.overdue {
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.deadline.today {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.deadline.future {
+  color: #90ee90;
+}
+
+body.dark-theme .deadline.overdue {
+  color: #ff6b6b;
+}
+
+body.dark-theme .deadline.today {
+  color: #ffcc00;
+}
+
+body.dark-theme .deadline.future {
+  color: #4cd137;
+}
